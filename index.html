@@ -5,7 +5,7 @@
   <title>Noël chez les Brazo 🎄</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Firebase SDKs (COMPAT — OBLIGATOIRE) -->
+  <!-- Firebase SDKs (COMPAT – PAS DE MODULE, PAS DE NPM) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -63,18 +63,18 @@
 
   <script>
     // ======================
-    // FIREBASE CONFIG (COMPAT)
+    // FIREBASE CONFIG (TA VRAIE CONFIG)
     // ======================
     const firebaseConfig = {
-      apiKey: "AIzaSyDgJMI2owAPCz1CawUhi6C50a1vqIpY0bo",
+      apiKey: "AIzaSyDgJMI2owAPCzlCawUhi6C50a1vqIpY0bo",
       authDomain: "noel-chez-les-brazo.firebaseapp.com",
       projectId: "noel-chez-les-brazo",
-      storageBucket: "noel-chez-les-brazo.appspot.com",
+      storageBucket: "noel-chez-les-brazo.firebasestorage.app",
       messagingSenderId: "143321594120",
-      appId: "1:143321594120:web:c19f278a07720bd18cd4bd"
+      appId: "1:143321594120:web:b8bf922f9bee969f8cd4bd"
     };
 
-    // INIT FIREBASE
+    // INIT FIREBASE (COMPAT)
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -121,4 +121,3 @@
 
 </body>
 </html>
-
