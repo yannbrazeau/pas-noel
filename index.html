@@ -58,7 +58,7 @@ h2{font-size:18px}
 .small{opacity:.78;font-size:14px;line-height:1.35}
 .hr{height:1px;background:rgba(0,0,0,.10);margin:12px 0;border-radius:999px}
 
-textarea,button,select{
+textarea,button{
   width:100%;
   padding:12px;
   border-radius:14px;
@@ -81,6 +81,10 @@ button.secondary{
   background:linear-gradient(180deg,#d63a4f,#a9122b);
   box-shadow:0 10px 22px rgba(196,30,58,.18);
 }
+button.reset{
+  background:linear-gradient(180deg,#2b4aa5,#19357a);
+  box-shadow:0 10px 22px rgba(11,74,158,.18);
+}
 
 .box{
   margin-top:12px;
@@ -102,414 +106,204 @@ button.secondary{
 
 a{color:#0b4a9e;word-break:break-all}
 .hide{display:none}
-
-/* Forcer la saisie au-dessus de tout */
-textarea,button,select{position:relative; z-index:5; pointer-events:auto}
-
-kbd{
-  display:inline-block;
-  padding:2px 7px;
-  border-radius:8px;
-  border:1px solid rgba(0,0,0,.12);
-  background:rgba(255,255,255,.8);
-  font-size:12px;
-}
 </style>
 </head>
 
 <body>
 <div class="wrap">
 
-  <!-- HOST -->
-  <div class="card" id="host">
-    <h1>🎄 Noël chez les Brazo</h1>
-    <h2>🕯️ Le Dernier Convive — V2</h2>
+<!-- ================= HOST ================= -->
+<div class="card" id="host">
+  <h1>🎄 Noël chez les Brazo</h1>
+  <h2>🕯️ Le Dernier Convive — V2</h2>
+
+  <div class="small">
+    1) Mets <b>exactement 9 prénoms</b> (1 par ligne)<br>
+    2) Clique <b>GÉNÉRER</b><br>
+    3) Envoie à chacun son lien privé<br>
+    4) Pendant le repas, envoie les liens <b>?a=</b> dans le groupe pour synchroniser
+  </div>
+
+  <textarea id="names" placeholder="Yann&#10;Delphine&#10;Maxime&#10;Louis&#10;Gabriel&#10;Juliette&#10;Baptiste&#10;..."></textarea>
+  <button id="btnGen">GÉNÉRER LA PARTIE</button>
+
+  <div class="box">
+    <h2>🔗 Liens privés joueurs</h2>
+    <div id="links" class="small">—</div>
+  </div>
+
+  <div class="box">
+    <h2>📣 Liens de groupe (actes)</h2>
+    <div id="actLinks" class="small">—</div>
+  </div>
+
+  <div class="box">
+    <h2>🧩 Solution (hôte)</h2>
+    <div id="solution" class="small">—</div>
+  </div>
+</div>
+
+<!-- ================= PLAYER ================= -->
+<div class="card hide" id="player">
+  <h1>🕯️ Le Dernier Convive</h1>
+  <div class="small"><b>Joueur :</b> <span id="pname"></span> — Ne montre pas ton écran</div>
+
+  <div class="box">
+    <h2>🎭 Ton rôle</h2>
+    <div id="role" class="small"></div>
+    <div id="roleRule" class="small"></div>
+  </div>
+
+  <div class="box hide" id="killerBox">
+    <h2>🔪 Ton objectif secret</h2>
+    <div id="killerGoal" class="small"></div>
+  </div>
+
+  <div class="box">
+    <h2 id="actTitle"></h2>
+    <div id="story" class="small"></div>
+  </div>
+
+  <div class="box">
+    <h2>🔍 Ton indice</h2>
+    <div id="clue" class="small"></div>
+  </div>
+
+  <button class="secondary" id="btnNext">ACTE SUIVANT</button>
+
+  <!-- MODE TEST -->
+  <div class="box" id="testBox">
+    <h2>🧼 Mode test</h2>
     <div class="small">
-      1) Mets <b>exactement 9 prénoms</b> (1 par ligne) <br>
-      2) Clique <b>GÉNÉRER</b> <br>
-      3) Envoie à chacun son lien privé (WhatsApp) <br>
-      4) <b>Pour synchroniser</b>, envoie ensuite au groupe les liens “Acte” (<kbd>?a=</kbd>) au bon moment.
-      <div class="hr"></div>
-      <b>Règle d’or :</b> personne ne montre son écran. Au dessert : accusations → révélation.
+      Si tu testes plusieurs joueurs sur <b>le même téléphone</b>,
+      efface le joueur enregistré ici.
     </div>
-
-    <textarea id="names" placeholder="Yann&#10;Delphine&#10;Maxime&#10;Louis&#10;Gabriel&#10;Juliette&#10;Baptiste&#10;... (9 lignes)"></textarea>
-    <button id="btnGen">GÉNÉRER LA PARTIE</button>
-
-    <div class="box">
-      <h2>🔗 Liens privés joueurs</h2>
-      <div id="links" class="small">—</div>
-      <div class="small" style="margin-top:8px;opacity:.85">
-        ⚠️ Chaque joueur doit ouvrir son lien privé <b>au moins une fois</b> (ça enregistre son accès). Ensuite, il pourra utiliser les liens de groupe.
-      </div>
-    </div>
-
-    <div class="box">
-      <h2>📣 Liens de groupe (synchro des actes)</h2>
-      <div id="actLinks" class="small">—</div>
-      <div class="small" style="margin-top:8px;opacity:.85">
-        À envoyer dans le groupe WhatsApp à chaque étape : tout le monde verra <b>le même narratif</b> au même moment.
-      </div>
-    </div>
-
-    <div class="box">
-      <h2>🧩 Solution (hôte)</h2>
-      <div id="solution" class="small">—</div>
-      <div class="small" style="margin-top:8px">
-        À dire au groupe : <b>“C’est un Cluedo. Vous avez des indices privés. Au dessert, vous accusez.”</b>
-      </div>
-    </div>
+    <button class="reset" id="btnReset">EFFACER LE JOUEUR SUR CE TÉLÉPHONE</button>
   </div>
-
-  <!-- PLAYER -->
-  <div class="card hide" id="player">
-    <h1>🕯️ Le Dernier Convive</h1>
-    <div class="small"><b>Joueur :</b> <span id="pname"></span> — Ne montre pas ton écran.</div>
-
-    <div class="box">
-      <h2>🎭 Ton rôle</h2>
-      <div id="role" class="small">—</div>
-      <div id="roleRule" class="small" style="margin-top:6px;opacity:.85">—</div>
-    </div>
-
-    <div class="box hide" id="killerBox">
-      <h2>🔪 Ton objectif secret</h2>
-      <div id="killerGoal" class="small"></div>
-    </div>
-
-    <div class="box">
-      <h2 id="actTitle"></h2>
-      <div id="story" class="small"></div>
-    </div>
-
-    <div class="box">
-      <h2>🔍 Ton indice</h2>
-      <div id="clue" class="small"></div>
-    </div>
-
-    <button class="secondary" id="btnNext">ACTE SUIVANT</button>
-  </div>
+</div>
 
 </div>
 
 <script>
-/* Base64 UTF-8 safe (résout les accents / ’ / etc.) */
-function b64uEncode(obj){
-  const json = JSON.stringify(obj);
-  const bytes = new TextEncoder().encode(json);
-  let bin = "";
-  for (const b of bytes) bin += String.fromCharCode(b);
-  return btoa(bin);
+/* ===== Utils ===== */
+function b64uEncode(o){
+  const j=JSON.stringify(o);
+  const b=new TextEncoder().encode(j);
+  let s=""; for(const x of b)s+=String.fromCharCode(x);
+  return btoa(s);
 }
-function b64uDecode(str){
-  const bin = atob(str);
-  const bytes = new Uint8Array(bin.length);
-  for (let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
-  const json = new TextDecoder().decode(bytes);
-  return JSON.parse(json);
+function b64uDecode(s){
+  const b=atob(s); const a=new Uint8Array(b.length);
+  for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);
+  return JSON.parse(new TextDecoder().decode(a));
 }
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
 
-/* Narratif V2 (commun) */
-const ACTS = [
-  ["🥂 Acte I — Apéro : Le masque social",
-   "Les premières phrases tombent. Quelqu’un répète exactement les mots d’un autre. Un test. Un miroir. La partie commence doucement."],
-  ["🍽️ Acte II — Entrée : Quelque chose a bougé",
-   "Un objet n’est plus là où il devrait être. Personne ne l’a vu disparaître. Pourtant, quelqu’un sait exactement quand cela s’est produit."],
-  ["🍝 Acte III — Plat : Trop en avance",
-   "Une défense arrive avant la phrase. Une micro-seconde d’avance. Quelqu’un connaît déjà la suite de la conversation."],
-  ["🧀 Acte IV — Fromage : Le faux parfait",
-   "Un indice apparaît. Trop propre. Trop évident. Quelqu’un l’a déposé pour être trouvé."],
-  ["🍰 Acte V — Dessert : La vérité est une combinaison",
-   "Il ne reste plus beaucoup de temps. Ce que tu n’as pas éliminé est probablement la réponse… sauf si on t’a guidé vers une fausse piste."]
+/* ===== Game data ===== */
+const ACTS=[
+ ["🥂 Apéro","Les premières phrases tombent. Quelqu’un teste l’ambiance."],
+ ["🍽️ Entrée","Un objet n’est plus exactement à sa place."],
+ ["🍝 Plat","Quelqu’un anticipe les réactions avant qu’elles n’arrivent."],
+ ["🧀 Fromage","Un indice est trop parfait pour être honnête."],
+ ["🍰 Dessert","La vérité est une combinaison. Accuse."]
 ];
 
-/* Lieux / moyens */
-const WHERE = ["Cuisine","Couloir","Salon","Salle à manger","Terrasse/Balcon","Entrée","Escalier/Palier","Près du frigo/bar","Point d’eau/WC"];
-const HOW   = ["Message anonyme","Substitution discrète","Son/Lumière déclenché","Mensonge répété","Faux indice placé","Regard orchestré","Rumeur soufflée","Disparition d’objet","Mise en scène subtile"];
+const WHERE=["Cuisine","Salon","Salle à manger","Entrée","Couloir","Terrasse","Escalier","Près du frigo","Point d’eau"];
+const HOW=["Message anonyme","Faux indice","Mensonge répété","Substitution","Rumeur","Disparition d’objet","Mise en scène"];
 
-/* Rôles (on en assigne 4, les autres = Détective) */
-const ROLES = [
-  { id:"observer",     label:"🕵️ L’Observateur",   rule:"Tu reçois un indice supplémentaire dès l’apéro. Observe les micro-réactions.", extraClue:true },
-  { id:"silent",       label:"🤐 Le Silencieux",    rule:"Pendant l’apéro, tu ne peux pas parler. Hoche la tête, souris, mais silence.", silentAct:0 },
-  { id:"manipulator",  label:"🎭 Le Manipulateur",  rule:"Tu as 1 indice volontairement faux (crédible). Utilise-le pour orienter le groupe.", fakeClue:true },
-  { id:"confident",    label:"🕯️ Le Confident",     rule:"Une seule fois, tu peux montrer UN de tes indices à quelqu’un. Choisis bien.", canShowOne:true },
-  { id:"rusher",       label:"⏳ Le Pressé",        rule:"Tu dois accuser avant le dessert. Sinon, tu perds (même si tu avais raison).", mustAccuseBeforeDessert:true }
+const ROLES=[
+ {id:"observer",label:"🕵️ Observateur",rule:"Tu reçois un indice bonus à l’apéro."},
+ {id:"silent",label:"🤐 Silencieux",rule:"À l’apéro, tu ne peux pas parler."},
+ {id:"manipulator",label:"🎭 Manipulateur",rule:"Tu as un faux indice crédible."},
+ {id:"confident",label:"🕯️ Confident",rule:"Une fois, tu peux montrer un indice."}
 ];
 
-const KILLER_GOALS = [
-  "Être accusé par au moins 2 personnes.",
-  "Faire accuser un innocent précis.",
-  "Ne jamais mentir explicitement (tu peux esquiver).",
-  "Ne jamais être nommé avant le dessert."
+const KILLER_GOALS=[
+ "Être accusé par au moins deux personnes",
+ "Faire accuser un innocent précis",
+ "Ne jamais mentir explicitement",
+ "Ne jamais être nommé avant le dessert"
 ];
 
-let payload = null;
-let act = 0;
+let payload=null, act=0;
 
-function shuffle(a){
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
-  }
-  return a;
-}
-function cleanNames(raw){
-  return raw.split("\n").map(s=>s.trim()).filter(Boolean);
-}
-function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-function buildRoleMap(names, killerName){
-  // On assigne 4 rôles à 4 joueurs (au hasard). Les autres = Détective.
-  const chosen = shuffle([...ROLES]).slice(0,4);
-  const shuffledNames = shuffle([...names]);
-
-  const map = {};
-  shuffledNames.forEach(n => map[n] = { id:"detective", label:"🕯️ Détective", rule:"Tu as un puzzle partiel. Observe, recoupe, accuse au dessert." });
-
-  // Option : éviter de donner "Manipulateur" au tueur (c'est déjà assez puissant). Si ça tombe, on permute.
-  let roleNames = shuffle([...shuffledNames]);
-  chosen.forEach((r, idx) => {
-    let name = roleNames[idx];
-    map[name] = r;
-  });
-
-  // Petit garde-fou : si le tueur a "manipulator", on échange avec un détective.
-  if (map[killerName]?.id === "manipulator") {
-    const detective = names.find(n => n !== killerName && map[n].id === "detective");
-    if (detective) {
-      map[killerName] = { id:"detective", label:"🕯️ Détective", rule:"Tu as un puzzle partiel. Observe, recoupe, accuse au dessert." };
-      map[detective]  = ROLES.find(r=>r.id==="manipulator");
-    }
-  }
-  return map;
-}
-
+/* ===== Generate ===== */
 function generate(){
-  const names = cleanNames(document.getElementById("names").value);
-  if (names.length !== 9){
-    alert("Il faut exactement 9 prénoms (9 lignes non vides).");
-    return;
-  }
+  const names=document.getElementById("names").value.split("\n").map(s=>s.trim()).filter(Boolean);
+  if(names.length!==9){alert("Il faut exactement 9 prénoms");return;}
 
-  const killer = shuffle([...names])[0];
-  const where  = pick(WHERE);
-  const how    = pick(HOW);
+  const killer=pick(names), where=pick(WHERE), how=pick(HOW);
+  document.getElementById("solution").innerHTML=`🔪 <b>${killer}</b><br>📍 ${where}<br>🛠️ ${how}`;
 
-  // Fausse piste complète (crédible)
-  const fakeKiller = shuffle(names.filter(n=>n!==killer))[0];
-  const fakeWhere  = pick(WHERE.filter(w=>w!==where));
-  const fakeHow    = pick(HOW.filter(h=>h!==how));
+  const base=location.origin+location.pathname;
 
-  document.getElementById("solution").innerHTML =
-    `<b>🔪 ${killer}</b><br>📍 ${where}<br>🛠️ ${how}<br><div class="small" style="margin-top:6px;opacity:.85">Fausse piste interne : ${fakeKiller} / ${fakeWhere} / ${fakeHow} (ne pas dire)</div><span class="small">Ne révèle qu’au dessert.</span>`;
+  document.getElementById("actLinks").innerHTML=ACTS.map((a,i)=>
+    `<div class="pill">${a[0]}</div><a href="${base}?a=${i}">${base}?a=${i}</a><br>`
+  ).join("");
 
-  // Deck d'exclusions (tout sauf la solution)
-  const deck = [];
-  for (const n of names) if (n !== killer) deck.push(`❌ Ce n’est pas ${n}`);
-  for (const w of WHERE) if (w !== where)  deck.push(`❌ Pas ${w}`);
-  for (const h of HOW)   if (h !== how)    deck.push(`❌ Pas ${h}`);
+  const roleMap={};
+  names.forEach(n=>roleMap[n]={id:"detective",label:"🕯️ Détective",rule:"Recoupe les infos."});
+  shuffle([...ROLES]).slice(0,4).forEach((r,i)=>roleMap[names[i]]=r);
 
-  // Deck de "faux indices" (ils orientent vers la fausse piste)
-  // Important : ce sont aussi des exclusions, donc "crédibles" et difficiles à détecter.
-  const fakeDeck = [
-    `❌ Ce n’est pas ${fakeKiller}`,
-    `❌ Pas ${fakeWhere}`,
-    `❌ Pas ${fakeHow}`
-  ];
-
-  shuffle(deck);
-
-  // Base URL
-  const base = location.origin + location.pathname;
-
-  // Liens de groupe (actes) pour piloter la synchro
-  const actLinks = ACTS.map((a, idx) => {
-    const url = base + "?a=" + idx;
-    return `<div class="pill">${a[0]}</div><div><a href="${url}">${url}</a></div><br>`;
-  }).join("");
-  document.getElementById("actLinks").innerHTML = actLinks;
-
-  // Attribution des rôles (avec garde-fou)
-  const roleMap = buildRoleMap(names, killer);
-
-  // Objectif secret du tueur
-  const killerGoal = pick(KILLER_GOALS);
-
-  // Construction des mains : 2 indices par acte (pour exploiter plus du deck)
-  // Total souhaité: 9 joueurs * 5 actes * 2 = 90 cartes.
-  // Notre deck "exclusions" fait 8 + 8 + 8 = 24 (car 9 noms -> 8 exclusions, idem lieux/moyens).
-  // Donc on va compléter avec des phrases "ambiance" non éliminatoires (mais informatives/roleplay).
-  const FLAVOR = [
-    "🕯️ Quelqu’un évite ton regard au moment où tu parles.",
-    "🕯️ Une réaction trop rapide : comme si la réponse était prête.",
-    "🕯️ Tu entends une phrase répétée à l’identique. Exactement.",
-    "🕯️ Un silence tombe une demi-seconde trop tard.",
-    "🕯️ Observe qui soutient quelle piste sans preuve.",
-    "🕯️ Quelqu’un “défend” une idée qu’on n’a pas encore formulée."
-  ];
-
-  // On crée un mega-deck: exclusions + quelques flavor + faux indices (injectés ensuite au besoin)
-  let mega = [...deck];
-  while (mega.length < 90) mega.push(pick(FLAVOR));
-  shuffle(mega);
-
-  // Distribution : 10 cartes par joueur (2 cartes x 5 actes) = 10
-  const hands = {};
-  names.forEach((n, i) => {
-    hands[n] = mega.slice(i*10, i*10 + 10);
-  });
-
-  // Règles V2 : Manipulateur reçoit au moins 1 faux indice crédible
-  const manipName = names.find(n => roleMap[n]?.id === "manipulator");
-  if (manipName) {
-    // On remplace une des cartes de son acte II (index 2 ou 3) par un faux indice
-    const idx = 2; // première carte de l'acte II dans la main (0-1 acte I, 2-3 acte II, etc.)
-    hands[manipName][idx] = pick(fakeDeck);
-  }
-
-  // Observateur : reçoit une carte bonus à l’acte I (on la met dans une “slot” dédiée)
-  // Pour rester simple côté UI, on l’affichera comme “bonus” en plus de l’indice normal.
-  const observerName = names.find(n => roleMap[n]?.id === "observer");
-  const observerBonus = observerName ? pick(deck.length ? deck : FLAVOR) : null;
-
-  // Génération des liens privés joueurs
-  let linksHTML = "";
-  names.forEach((n)=>{
-    const role = roleMap[n];
-
-    const hand10 = hands[n];
-    // 2 indices par acte
-    const perAct = [];
-    for (let a=0; a<ACTS.length; a++){
-      perAct.push([hand10[a*2], hand10[a*2+1]].filter(Boolean));
-    }
-
-    const dataObj = {
-      v: 2,
+  let links="";
+  names.forEach(n=>{
+    const data=b64uEncode({
       n,
-      role,
-      hand: perAct,
-      killer: (n === killer),
-      killerGoal: (n === killer) ? killerGoal : null,
-      observerBonus: (role.id === "observer") ? observerBonus : null
-    };
-
-    const data = b64uEncode(dataObj);
-    const url  = base + "?p=" + encodeURIComponent(data);
-
-    linksHTML += `<div class="pill">${n}</div><div><a href="${url}">${url}</a></div><br>`;
+      role:roleMap[n],
+      killer:n===killer,
+      killerGoal:n===killer?pick(KILLER_GOALS):null
+    });
+    links+=`<div class="pill">${n}</div><a href="${base}?p=${encodeURIComponent(data)}">${base}?p=...</a><br>`;
   });
-
-  document.getElementById("links").innerHTML = linksHTML;
+  document.getElementById("links").innerHTML=links;
 }
 
+/* ===== Player ===== */
 function renderAct(){
-  document.getElementById("actTitle").textContent = ACTS[act][0];
-  document.getElementById("story").textContent    = ACTS[act][1];
-
-  // Rôle
-  document.getElementById("role").textContent = payload.role?.label || "🕯️ Détective";
-  document.getElementById("roleRule").textContent = payload.role?.rule || "";
-
-  // Objectif tueur
-  if (payload.killer){
+  document.getElementById("actTitle").textContent=ACTS[act][0];
+  document.getElementById("story").textContent=ACTS[act][1];
+  document.getElementById("role").textContent=payload.role.label;
+  document.getElementById("roleRule").textContent=payload.role.rule;
+  if(payload.killer){
     document.getElementById("killerBox").classList.remove("hide");
-    document.getElementById("killerGoal").textContent = payload.killerGoal || "—";
-  } else {
-    document.getElementById("killerBox").classList.add("hide");
-  }
-
-  // Indices : 2 par acte + bonus observateur à l’acte I
-  const clues = (payload.hand && payload.hand[act]) ? payload.hand[act] : [];
-  let txt = "";
-  if (!clues.length) {
-    txt = "Pas d’indice personnel à cet acte. Observe 🙂";
-  } else if (clues.length === 1) {
-    txt = clues[0];
-  } else {
-    txt = `• ${clues[0]}\n• ${clues[1]}`;
-  }
-
-  // Bonus observateur à l’acte I
-  if (payload.role?.id === "observer" && act === 0 && payload.observerBonus){
-    txt += `\n\n🕵️ Bonus Observateur :\n• ${payload.observerBonus}`;
-  }
-
-  document.getElementById("clue").textContent = txt;
-
-  // Règle Silencieux à l’apéro
-  if (payload.role?.id === "silent" && act === 0){
-    document.getElementById("roleRule").textContent =
-      "🤐 Pendant l’apéro, tu ne peux pas parler. Tu peux sourire, acquiescer, mais silence total.";
+    document.getElementById("killerGoal").textContent=payload.killerGoal;
   }
 }
 
-function nextAct(){
-  if (act < ACTS.length - 1){
-    act++;
-    renderAct();
-  } else {
-    alert("Dernier acte. Fais ton accusation finale, puis attends la révélation de l’hôte 🕯️");
-  }
-}
+function load(){
+  const p=new URLSearchParams(location.search).get("p");
+  const a=new URLSearchParams(location.search).get("a");
 
-/**
- * Mode synchro sans serveur :
- * - Le joueur ouvre 1 fois son lien privé ?p=... -> on stocke le token localement.
- * - L'hôte envoie au groupe des liens ?a=0..4.
- * - Si un joueur clique ?a=... (sans p), on le redirige vers sa page (token stocké) + &a=.
- * - Si p ET a -> on force l’acte et on cache “Acte suivant”.
- */
-function loadPlayer(){
-  const params = new URLSearchParams(location.search);
-  const p = params.get("p");
-  const a = params.get("a");
-
-  // Si le joueur ouvre son lien privé : on stocke le token
-  if (p) {
-    localStorage.setItem("dlc_player_token_v2", p);
-    payload = b64uDecode(decodeURIComponent(p));
-
+  if(p){
+    localStorage.setItem("dlc_player",""+p);
+    payload=b64uDecode(decodeURIComponent(p));
     document.getElementById("host").classList.add("hide");
     document.getElementById("player").classList.remove("hide");
-    document.getElementById("pname").textContent = payload.n;
-
-    // Si un acte est imposé, on s'aligne
-    if (a !== null) act = Math.max(0, Math.min(ACTS.length - 1, parseInt(a, 10) || 0));
+    document.getElementById("pname").textContent=payload.n;
+    if(a!==null)act=parseInt(a,10)||0;
     renderAct();
-
-    // Mode piloté par l’hôte : on cache le bouton “Acte suivant”
-    if (a !== null) {
-      document.getElementById("btnNext").classList.add("hide");
-      const note = document.createElement("div");
-      note.className = "small";
-      note.style.marginTop = "10px";
-      note.style.opacity = ".85";
-      note.textContent = "📣 Acte piloté par l’hôte — attends le prochain lien WhatsApp.";
-      document.getElementById("player").appendChild(note);
-    }
     return;
   }
 
-  // Si lien de groupe ?a=... sans p : redirection vers la page perso via token stocké
-  if (a !== null) {
-    const saved = localStorage.getItem("dlc_player_token_v2");
-    if (saved) {
-      const base = location.origin + location.pathname;
-      location.replace(base + "?p=" + encodeURIComponent(saved) + "&a=" + encodeURIComponent(a));
-      return;
-    } else {
-      alert("Ouvre d’abord ton lien privé (celui que l’hôte t’a envoyé), puis re-clique le lien de groupe.");
-      return;
-    }
+  if(a!==null){
+    const saved=localStorage.getItem("dlc_player");
+    if(saved){
+      location.replace(location.pathname+"?p="+encodeURIComponent(saved)+"&a="+a);
+    }else alert("Ouvre d’abord ton lien privé");
   }
-
-  // sinon : mode hôte
 }
 
-document.getElementById("btnGen").addEventListener("click", generate);
-document.getElementById("btnNext").addEventListener("click", nextAct);
-loadPlayer();
+/* ===== Events ===== */
+document.getElementById("btnGen").onclick=generate;
+document.getElementById("btnNext").onclick=()=>{if(act<ACTS.length-1){act++;renderAct();}};
+document.getElementById("btnReset").onclick=()=>{
+  localStorage.removeItem("dlc_player");
+  alert("Joueur effacé ✅");
+  location.href=location.pathname;
+};
+
+load();
 </script>
 </body>
 </html>
