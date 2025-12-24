@@ -1,123 +1,181 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Noël chez les Brazo 🎄</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Firebase SDKs (COMPAT – PAS DE MODULE, PAS DE NPM) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
-  <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont;
-      background: #0f172a;
-      color: #fff;
-      margin: 0;
-      padding: 40px;
-      text-align: center;
-    }
-    .box {
-      max-width: 420px;
-      margin: auto;
-      background: rgba(255,255,255,0.06);
-      padding: 30px;
-      border-radius: 20px;
-    }
-    button {
-      padding: 14px 22px;
-      border-radius: 12px;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-      background: #22c55e;
-      color: #000;
-      margin-top: 20px;
-      font-weight: 600;
-    }
-    .code {
-      font-size: 44px;
-      font-weight: 800;
-      letter-spacing: 6px;
-      margin-top: 20px;
-    }
-    .small {
-      opacity: 0.8;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Pas Noël 🎭</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+  font-family:system-ui;
+  background:#0f172a;
+  color:#fff;
+  margin:0;
+  padding:20px;
+  text-align:center;
+}
+.card{
+  max-width:500px;
+  margin:auto;
+  background:rgba(255,255,255,.06);
+  padding:24px;
+  border-radius:20px;
+}
+input,button{
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  font-size:16px;
+  margin-top:10px;
+  width:100%;
+}
+button{
+  background:#22c55e;
+  color:#000;
+  font-weight:700;
+  cursor:pointer;
+}
+.secondary{background:#38bdf8}
+.danger{background:#f97316}
+.timer{font-size:36px;font-weight:800;margin:10px}
+.mission{font-size:20px;margin:16px}
+.small{opacity:.8;font-size:14px;margin-top:6px}
+.hidden{display:none}
+.row{display:flex;gap:10px;margin-top:10px}
+.podium{font-size:22px;margin-top:12px}
+</style>
 </head>
 
 <body>
 
-  <div class="box">
-    <h1>🎭 Noël chez les Brazo</h1>
-    <p>Lancer une partie</p>
-    <button id="create">Créer une partie</button>
-    <div id="result"></div>
+<!-- START -->
+<div class="card" id="start">
+  <h1>🎭 Pas Noël</h1>
+  <input id="name" placeholder="Ton prénom">
+  <button onclick="createGame()">Créer une partie</button>
+  <input id="codeInput" placeholder="Code de partie">
+  <button class="secondary" onclick="joinGame()">Rejoindre</button>
+</div>
+
+<!-- GAME -->
+<div class="card hidden" id="game">
+  <h2 id="title"></h2>
+  <div class="small">Mission <span id="round"></span> / 100</div>
+  <div class="timer" id="timer">01:00</div>
+  <div class="mission" id="mission"></div>
+  <div class="small">🚫 Mot interdit : <b id="banned"></b></div>
+  <div class="small">🎭 Mode : <b id="mode"></b></div>
+  <div class="small">🏆 Score : <b id="score">0</b></div>
+
+  <div class="row">
+    <button onclick="vote(true)">🔥 Réussi</button>
+    <button class="danger" onclick="vote(false)">😅 Raté</button>
   </div>
 
-  <script>
-    // ======================
-    // FIREBASE CONFIG (TA VRAIE CONFIG)
-    // ======================
-    const firebaseConfig = {
-      apiKey: "AIzaSyDgJMI2owAPCzlCawUhi6C50a1vqIpY0bo",
-      authDomain: "noel-chez-les-brazo.firebaseapp.com",
-      projectId: "noel-chez-les-brazo",
-      storageBucket: "noel-chez-les-brazo.firebasestorage.app",
-      messagingSenderId: "143321594120",
-      appId: "1:143321594120:web:b8bf922f9bee969f8cd4bd"
-    };
+  <div class="row">
+    <button class="danger" onclick="penalty()">🚫 Mot interdit</button>
+    <button class="secondary" onclick="chaos()">🃏 Chaos</button>
+  </div>
+</div>
 
-    // INIT FIREBASE (COMPAT)
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+<!-- END -->
+<div class="card hidden" id="end">
+  <h1>🎉 Fin de partie</h1>
+  <div class="podium" id="podium"></div>
+  <button onclick="restart()">🔄 Revanche</button>
+</div>
 
-    // ======================
-    // UTILS
-    // ======================
-    function randCode() {
-      return String(Math.floor(1000 + Math.random() * 9000));
-    }
+<script>
+/* ===== DATA ===== */
+const BASE_MISSIONS=[
+"Fais rire quelqu’un sans parler",
+"Fais dire « d’accord » à quelqu’un",
+"Fais croire que tu travailles ici",
+"Explique un objet banal comme s’il était révolutionnaire",
+"Fais deviner un film sans les mains",
+"Complimente quelqu’un sur un détail improbable",
+"Fais un discours très solennel pour rien",
+"Fais croire que tu annonces une grande nouvelle",
+"Agis comme si tu étais observé",
+"Fais participer quelqu’un à ta mission"
+];
+while(BASE_MISSIONS.length<100){
+  BASE_MISSIONS.push(BASE_MISSIONS[BASE_MISSIONS.length%10]+" (variante)");
+}
+const BANNED=["sapin","cadeau","bûche","famille","renne","dinde"];
+const MODES=["agent secret","robot","ASMR","sans sourire","très sérieux"];
 
-    async function ensureAuth() {
-      if (auth.currentUser) return auth.currentUser.uid;
-      const cred = await auth.signInAnonymously();
-      return cred.user.uid;
-    }
+/* ===== STATE ===== */
+let name="",code="",index=0,score=0,timer=null,chaosUsed=false;
 
-    // ======================
-    // CREATE GAME
-    // ======================
-    document.getElementById("create").onclick = async () => {
-      try {
-        const uid = await ensureAuth();
-        const code = randCode();
+/* ===== UTILS ===== */
+function rand(arr,seed){
+ let h=0;
+ for(let c of seed) h=Math.imul(31,h)+c.charCodeAt(0)|0;
+ return arr[Math.abs(h)%arr.length];
+}
+function randCode(){return String(Math.floor(1000+Math.random()*9000))}
+function show(id){
+ document.querySelectorAll(".card").forEach(c=>c.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+}
+function format(s){return"00:"+String(s).padStart(2,"0")}
 
-        await db.collection("rooms").doc(code).set({
-          code: code,
-          gameName: "Noël chez les Brazo 🎄",
-          hostUid: uid,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        document.getElementById("result").innerHTML = `
-          <div class="code">${code}</div>
-          <div class="small">Partie créée 🎉</div>
-        `;
-
-      } catch (e) {
-        console.error(e);
-        alert("Erreur Firebase : " + e.message);
-      }
-    };
-  </script>
+/* ===== FLOW ===== */
+function createGame(){
+ name=document.getElementById("name").value||"Joueur";
+ code=randCode(); start();
+}
+function joinGame(){
+ name=document.getElementById("name").value||"Joueur";
+ code=document.getElementById("codeInput").value;
+ if(code.length!==4)return alert("Code invalide");
+ start();
+}
+function start(){
+ show("game");
+ document.getElementById("title").textContent=`🎭 ${name} — Code ${code}`;
+ loadMission();
+}
+function loadMission(){
+ if(index>=100){endGame();return;}
+ document.getElementById("round").textContent=index+1;
+ document.getElementById("mission").textContent=rand(BASE_MISSIONS,code+name+index);
+ document.getElementById("banned").textContent=rand(BANNED,code+index);
+ document.getElementById("mode").textContent=rand(MODES,name+index);
+ startTimer(60);
+}
+function startTimer(sec){
+ clearInterval(timer);
+ let left=sec;
+ document.getElementById("timer").textContent=format(left);
+ timer=setInterval(()=>{
+  left--;
+  document.getElementById("timer").textContent=format(left);
+  if(left<=0){clearInterval(timer);index++;loadMission();}
+ },1000);
+}
+function vote(ok){
+ if(ok)score++;
+ document.getElementById("score").textContent=score;
+ index++; loadMission();
+}
+function penalty(){
+ score--; document.getElementById("score").textContent=score;
+ alert("🚫 Mot interdit ! -1 point");
+}
+function chaos(){
+ if(chaosUsed)return alert("Chaos déjà utilisé !");
+ chaosUsed=true;
+ document.getElementById("mission").textContent=
+  rand(BASE_MISSIONS,Math.random().toString());
+}
+function endGame(){
+ show("end");
+ document.getElementById("podium").innerHTML=
+  `🥇 <b>${name}</b><br>Score final : <b>${score}</b><br><br>Moment culte garanti 😄`;
+}
+function restart(){location.reload()}
+</script>
 
 </body>
 </html>
