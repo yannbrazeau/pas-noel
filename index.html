@@ -5,7 +5,7 @@
   <title>Pas Noël 🎭</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Firebase SDKs (COMPAT OBLIGATOIRE) -->
+  <!-- Firebase SDKs (COMPAT) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -20,6 +20,13 @@
       padding: 40px;
       text-align: center;
     }
+    .box {
+      max-width: 420px;
+      margin: auto;
+      background: rgba(255,255,255,0.06);
+      padding: 30px;
+      border-radius: 20px;
+    }
     button {
       padding: 12px 20px;
       border-radius: 10px;
@@ -30,18 +37,16 @@
       color: #000;
       margin-top: 20px;
     }
-    .box {
-      max-width: 420px;
-      margin: auto;
-      background: rgba(255,255,255,0.06);
-      padding: 30px;
-      border-radius: 20px;
-    }
     .code {
-      font-size: 40px;
+      font-size: 42px;
       font-weight: 800;
       letter-spacing: 6px;
       margin-top: 20px;
+    }
+    .small {
+      opacity: 0.8;
+      margin-top: 10px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -68,12 +73,12 @@
       appId: "1:143321594120:web:c19f278a07720bd18cd4bd"
     };
 
+    // ======================
     // INIT
+    // ======================
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-
-    console.log("Firebase chargé ✅");
 
     // ======================
     // UTILS
@@ -102,10 +107,10 @@
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        document.getElementById("result").innerHTML =
-          `<div class="code">${code}</div><p>Partie créée ✅</p>`;
-
-        console.log("Room créée :", code);
+        document.getElementById("result").innerHTML = `
+          <div class="code">${code}</div>
+          <div class="small">Partie créée ✅</div>
+        `;
 
       } catch (e) {
         console.error(e);
