@@ -1,415 +1,149 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Le Dernier Convive — Cluedo de table</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Le Dernier Convive</title>
 <style>
-  body{font-family:system-ui;background:#0b1020;color:#fff;margin:0;padding:16px}
-  .card{max-width:780px;margin:0 auto 12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:16px;border-radius:18px}
-  h1,h2{margin:0 0 8px}
-  .muted{opacity:.8}
-  textarea,input,button,select{width:100%;padding:12px;border-radius:12px;border:none;font-size:16px;margin-top:10px}
-  textarea{min-height:160px}
-  button{background:#22c55e;color:#06110a;font-weight:900;cursor:pointer}
-  button.secondary{background:#38bdf8;color:#04121a}
-  button.danger{background:#f97316;color:#1a0b04}
-  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-  .row > *{flex:1 1 220px}
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);font-size:13px;margin-right:6px;margin-top:6px}
-  .big{font-size:22px;font-weight:900}
-  .act{font-size:18px;font-weight:900;margin-top:10px}
-  .box{padding:12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);margin-top:10px}
-  .links a{color:#9ae6ff;word-break:break-all}
-  .warn{color:#ffd39a}
-  .ok{color:#a7f3d0}
-  .hide{display:none}
-  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+body{
+  margin:0; padding:16px;
+  background:#0b1020; color:#fff;
+  font-family:system-ui;
+}
+.card{
+  max-width:800px; margin:0 auto 16px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:18px; padding:16px;
+}
+h1,h2{margin:0 0 10px}
+textarea,input,button,select{
+  width:100%; padding:12px; border-radius:12px;
+  border:none; font-size:16px; margin-top:8px;
+}
+button{background:#22c55e; color:#062; font-weight:900}
+.secondary{background:#38bdf8; color:#023}
+.hide{display:none}
+.box{margin-top:12px; padding:12px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;
+}
+.pill{
+  display:inline-block; padding:6px 10px;
+  border-radius:999px; background:rgba(255,255,255,.08);
+  margin:4px 4px 0 0; font-size:13px;
+}
 </style>
 </head>
 <body>
 
-<div class="card" id="hostView">
-  <h1>🕯️ Le Dernier Convive</h1>
-  <div class="muted">
-    Un Cluedo narratif (peur psychologique) qui se joue pendant tout le repas.<br>
-    <b>9 joueurs</b> recommandé. Aucun malaise, aucun rôle public, aucune élimination.
-  </div>
+<div class="card" id="host">
+<h1>🕯️ Le Dernier Convive</h1>
+<p>Entre exactement <b>9 prénoms</b> (1 par ligne)</p>
 
-  <h2 style="margin-top:14px">👥 Prénoms (9 lignes)</h2>
-  <textarea id="names" placeholder="1 prénom par ligne (9 lignes)&#10;Ex :&#10;Yann&#10;Delphine&#10;Maxime&#10;..."></textarea>
+<textarea id="names" placeholder="Alice&#10;Bob&#10;Claire&#10;..."></textarea>
+<button onclick="generate()">GÉNÉRER LA PARTIE</button>
 
-  <div class="row">
-    <button id="gen">Générer la partie</button>
-    <button id="copyHost" class="secondary">Copier le lien hôte</button>
-  </div>
-
-  <div class="box">
-    <div class="big">🎬 Pitch à lire (15 secondes)</div>
-    <div class="muted">
-      “Pendant ce repas, il y a une enquête. Chacun a des indices privés sur son téléphone.
-      À chaque moment (apéro/entrée/plat/fromage/dessert), on avance d’un acte.
-      Au dessert, chacun fait une accusation. Je révèle la solution.”
-    </div>
-  </div>
-
-  <div class="box">
-    <div class="big">🔗 Liens privés (à envoyer)</div>
-    <div id="links" class="links muted">Génère d’abord la partie.</div>
-  </div>
-
-  <div class="box">
-    <div class="big">🧩 Solution (visible uniquement côté hôte)</div>
-    <div id="solution" class="muted warn">Génère la partie pour voir la solution.</div>
-  </div>
+<div class="box">
+<h2>🔗 Liens privés</h2>
+<div id="links">—</div>
 </div>
 
-<div class="card hide" id="playerView">
-  <div class="big">🕯️ Le Dernier Convive</div>
-  <div class="muted">Vue joueur (indices privés). Ne montre pas ton écran.</div>
+<div class="box">
+<h2>🧩 Solution (hôte)</h2>
+<div id="solution">—</div>
+</div>
+</div>
 
-  <div class="box">
-    <div><b>Détective :</b> <span id="pName"></span></div>
-    <div class="muted">Partie : <span id="pCode" class="mono"></span></div>
-  </div>
+<div class="card hide" id="player">
+<h1>🕯️ Le Dernier Convive</h1>
+<p><b>Détective :</b> <span id="pname"></span></p>
 
-  <div class="box">
-    <div class="act" id="actTitle">🥂 Acte I — Apéro</div>
-    <div id="story" class="muted"></div>
-  </div>
+<div class="box">
+<h2 id="actTitle">🥂 Apéro</h2>
+<p id="story"></p>
+</div>
 
-  <div class="box">
-    <div class="big">🔍 Ton indice (cet acte)</div>
-    <div id="clueNow" class="muted"></div>
-  </div>
+<div class="box">
+<h2>🔍 Ton indice</h2>
+<p id="clue"></p>
+</div>
 
-  <div class="row">
-    <button id="nextAct" class="secondary">Acte suivant</button>
-    <button id="showAll" class="danger">Voir mon dossier (toutes mes cartes)</button>
-  </div>
-
-  <div class="box hide" id="allCardsBox">
-    <div class="big">📁 Ton dossier (cartes d’exclusion)</div>
-    <div id="allCards" class="muted"></div>
-    <div class="muted warn" style="margin-top:8px">Astuce : élimine tout ce que tu as, puis déduis ce qui manque.</div>
-  </div>
-
-  <div class="box" id="accuseBox">
-    <div class="big">🧠 Accusation finale (au Dessert)</div>
-    <div class="muted">Tu peux attendre le dessert pour valider.</div>
-    <label class="muted">QUI</label>
-    <select id="accWho"></select>
-    <label class="muted">OÙ</label>
-    <select id="accWhere"></select>
-    <label class="muted">AVEC QUOI</label>
-    <select id="accHow"></select>
-    <button id="saveAcc">Enregistrer mon accusation</button>
-    <div id="accSaved" class="muted ok"></div>
-  </div>
+<button class="secondary" onclick="nextAct()">ACTE SUIVANT</button>
 </div>
 
 <script>
-/* ==========================
-   DATA (Cluedo narratif)
-========================== */
 const ACTS = [
-  { key:"apero",   title:"🥂 Acte I — Apéro",
-    story:"Une phrase revient, identique, dans deux bouches différentes. Comme un écho. Quelqu’un teste le groupe… doucement." },
-  { key:"entree",  title:"🍽️ Acte II — Entrée",
-    story:"Un objet n’est plus à sa place. Personne n’a vu le mouvement. Pourtant, il a eu lieu." },
-  { key:"plat",    title:"🍝 Acte III — Plat",
-    story:"Quelqu’un anticipe les réactions avant qu’elles n’arrivent. Une micro-seconde d’avance. Comme s’il lisait la pièce." },
-  { key:"fromage", title:"🧀 Acte IV — Fromage",
-    story:"Un indice est trop parfait. Trop propre. Il a été déposé. Et il pointe dans une direction… volontairement." },
-  { key:"dessert", title:"🍰 Acte V — Dessert",
-    story:"Dernière chance : la vérité est une combinaison. Ce que tu n’as pas éliminé est probablement la réponse." }
+ ["🥂 Apéro","Quelque chose commence. Un détail revient deux fois."],
+ ["🍽️ Entrée","Un objet n’est plus exactement à sa place."],
+ ["🍝 Plat","Quelqu’un semble anticiper les réactions."],
+ ["🧀 Fromage","Un indice est trop parfait."],
+ ["🍰 Dessert","La vérité est là. Déduis."]
 ];
 
-const WHERE = [
-  "Cuisine","Couloir","Salon","Salle à manger","Terrasse / balcon",
-  "Entrée","Escalier / palier","Près du frigo / bar","Toilettes / point d’eau"
-];
+const WHERE = ["Cuisine","Couloir","Salon","Salle à manger","Terrasse","Entrée","Escalier","Bar","Point d’eau"];
+const HOW = ["Message anonyme","Substitution","Son/Lumière","Mensonge","Faux indice","Regard","Rumeur","Disparition","Mise en scène"];
 
-const HOW = [
-  "Un message anonyme",
-  "Une substitution discrète",
-  "Une lumière/son déclenché",
-  "Un mensonge répété",
-  "Un faux indice placé",
-  "Un regard orchestré",
-  "Une rumeur soufflée",
-  "Une disparition d’objet",
-  "Une mise en scène subtile"
-];
+let payload=null, act=0;
 
-/* ==========================
-   UTILS
-========================== */
-const $ = (id)=>document.getElementById(id);
-
-function shuffle(arr, seedStr){
-  // Fisher-Yates + seed simple (déterministe)
-  let a = arr.slice();
-  let seed = 2166136261;
-  for (let i=0;i<seedStr.length;i++){ seed ^= seedStr.charCodeAt(i); seed = Math.imul(seed, 16777619); }
-  function rnd(){
-    seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
-    return ((seed>>>0) / 4294967296);
-  }
-  for (let i=a.length-1;i>0;i--){
-    const j = Math.floor(rnd()*(i+1));
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
     [a[i],a[j]]=[a[j],a[i]];
   }
   return a;
 }
 
-function b64encode(obj){
-  return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
-}
-function b64decode(str){
-  return JSON.parse(decodeURIComponent(escape(atob(str))));
-}
+function generate(){
+  const names=document.getElementById("names").value.trim().split("\n");
+  if(names.length!==9){alert("Il faut 9 prénoms");return;}
+  const killer=shuffle([...names])[0];
+  const where=shuffle([...WHERE])[0];
+  const how=shuffle([...HOW])[0];
 
-function setSelectOptions(sel, arr){
-  sel.innerHTML = "";
-  arr.forEach(x=>{
-    const o=document.createElement("option");
-    o.value=x; o.textContent=x;
-    sel.appendChild(o);
+  document.getElementById("solution").innerHTML=
+    `<b>🔪 ${killer}</b><br>📍 ${where}<br>🛠️ ${how}`;
+
+  let deck=[];
+  names.forEach(n=>{if(n!==killer)deck.push("❌ Ce n’est pas "+n)});
+  WHERE.forEach(l=>{if(l!==where)deck.push("❌ Pas "+l)});
+  HOW.forEach(h=>{if(h!==how)deck.push("❌ Pas "+h)});
+  shuffle(deck);
+
+  let links="";
+  names.forEach((n,i)=>{
+    const hand=deck.filter((_,k)=>k%9===i);
+    const data=btoa(JSON.stringify({n,hand}));
+    const url=location.href.split("?")[0]+"?p="+data;
+    links+=`<div class="pill">${n}</div><div>${url}</div><br>`;
   });
+  document.getElementById("links").innerHTML=links;
 }
 
-/* ==========================
-   GAME GENERATION (Host)
-========================== */
-function generateGame(names){
-  const clean = names.map(n=>n.trim()).filter(Boolean);
-  if (clean.length !== 9) throw new Error("Il faut exactement 9 prénoms (9 lignes).");
-
-  // suspects = joueurs
-  const SUSPECTS = clean.slice();
-
-  // pick solution
-  const seedKey = String(Date.now()); // aléatoire à chaque génération
-  const sSus = shuffle(SUSPECTS, "S"+seedKey)[0];
-  const sWhere = shuffle(WHERE, "W"+seedKey)[0];
-  const sHow = shuffle(HOW, "H"+seedKey)[0];
-
-  const solution = { who:sSus, where:sWhere, how:sHow };
-
-  // build deck of remaining cards (exclusions)
-  // Card format: {type:"who"/"where"/"how", value:"..."}
-  const deck = [];
-  SUSPECTS.forEach(x=>{ if (x!==solution.who) deck.push({type:"who", value:x}); });
-  WHERE.forEach(x=>{ if (x!==solution.where) deck.push({type:"where", value:x}); });
-  HOW.forEach(x=>{ if (x!==solution.how) deck.push({type:"how", value:x}); });
-
-  const shuffledDeck = shuffle(deck, "D"+seedKey);
-
-  // deal round-robin
-  const hands = {};
-  clean.forEach(n=>hands[n]=[]);
-  let idx=0;
-  for (const card of shuffledDeck){
-    hands[clean[idx % clean.length]].push(card);
-    idx++;
-  }
-
-  // Create per-act clue schedule:
-  // Each act reveals at most 1 card from the player's hand (if any remain)
-  const schedules = {};
-  clean.forEach(n=>{
-    const hand = hands[n];
-    const reveal = [];
-    for (let a=0;a<ACTS.length;a++){
-      reveal.push(hand[a] || null);
-    }
-    schedules[n] = reveal;
-  });
-
-  // A short code for display (not used for security)
-  const code = String(Math.floor(1000 + Math.random()*9000));
-
-  return { code, seedKey, suspects:SUSPECTS, where:WHERE, how:HOW, solution, hands, schedules, acts:ACTS };
-}
-
-/* ==========================
-   RENDER Host links
-========================== */
-function renderHost(game){
-  const base = new URL(window.location.href);
-  base.searchParams.delete("p");
-
-  // Host payload contains full game incl. solution
-  const hostPayload = { role:"host", game };
-  const hostUrl = new URL(base.toString());
-  hostUrl.searchParams.set("p", b64encode(hostPayload));
-
-  // Player links: contain only player name + their schedule + lists (no solution)
-  const links = [];
-  for (const player of game.suspects){
-    const payload = {
-      role:"player",
-      code: game.code,
-      player,
-      suspects: game.suspects,
-      where: game.where,
-      how: game.how,
-      acts: game.acts,
-      schedule: game.schedules[player],  // per-act card reveal
-      hand: game.hands[player]           // full hand (for “dossier”)
-    };
-    const u = new URL(base.toString());
-    u.searchParams.set("p", b64encode(payload));
-    links.push({ player, url:u.toString() });
-  }
-
-  // Print links
-  $("links").innerHTML =
-    `<div class="ok"><b>Lien hôte (garde-le pour toi) :</b><br><a href="${hostUrl.toString()}">${hostUrl.toString()}</a></div>` +
-    `<div style="margin-top:12px"></div>` +
-    links.map(x=>`<div class="pill"><b>${x.player}</b></div><div class="muted"><a href="${x.url}">${x.url}</a></div><div style="height:10px"></div>`).join("");
-
-  $("solution").innerHTML =
-    `Solution (ne pas montrer) :<br><br>
-     <b>QUI :</b> ${game.solution.who}<br>
-     <b>OÙ :</b> ${game.solution.where}<br>
-     <b>AVEC QUOI :</b> ${game.solution.how}<br><br>
-     <span class="muted">Révèle au dessert. Avant, laisse le mystère vivre.</span>`;
-
-  // Copy host link button
-  $("copyHost").onclick = async ()=>{
-    try{
-      await navigator.clipboard.writeText(hostUrl.toString());
-      alert("Lien hôte copié ✅");
-    }catch(e){
-      prompt("Copie ce lien hôte :", hostUrl.toString());
-    }
-  };
-}
-
-/* ==========================
-   PLAYER VIEW
-========================== */
-function cardToText(card){
-  if (!card) return "Pas d’indice personnel pour toi à cet acte. Observe, et laisse les autres parler 🙂";
-  if (card.type==="who") return `❌ Le coupable n’est PAS <b>${escapeHtml(card.value)}</b>.`;
-  if (card.type==="where") return `❌ Ce n’était PAS dans <b>${escapeHtml(card.value)}</b>.`;
-  if (card.type==="how") return `❌ Ce n’était PAS par <b>${escapeHtml(card.value)}</b>.`;
-  return "Indice illisible.";
-}
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-
-function showPlayer(payload){
-  $("hostView").classList.add("hide");
-  $("playerView").classList.remove("hide");
-
-  let actIndex = 0;
-
-  $("pName").textContent = payload.player || "Joueur";
-  $("pCode").textContent = payload.code || "";
-
-  // selects for accusation
-  setSelectOptions($("accWho"), payload.suspects);
-  setSelectOptions($("accWhere"), payload.where);
-  setSelectOptions($("accHow"), payload.how);
-
-  function renderAct(){
-    const act = payload.acts[actIndex];
-    $("actTitle").textContent = act.title;
-    $("story").textContent = act.story;
-    $("clueNow").innerHTML = cardToText(payload.schedule[actIndex]);
-
-    // Dessert -> encourage accusation
-    if (actIndex === payload.acts.length-1){
-      $("accuseBox").classList.remove("hide");
-    }
-  }
-
-  $("nextAct").onclick = ()=>{
-    if (actIndex < payload.acts.length-1){
-      actIndex++;
-      renderAct();
-    } else {
-      alert("Dernier acte atteint. Fais ton accusation puis attends la révélation de l’hôte 🕯️");
-    }
-  };
-
-  $("showAll").onclick = ()=>{
-    $("allCardsBox").classList.toggle("hide");
-    $("allCards").innerHTML = payload.hand.map(c=>`<div class="pill">${cardToText(c).replace(/<[^>]*>/g,"")}</div>`).join(" ");
-  };
-
-  $("saveAcc").onclick = ()=>{
-    const acc = {
-      who: $("accWho").value,
-      where: $("accWhere").value,
-      how: $("accHow").value
-    };
-    localStorage.setItem("cluedo_acc_"+payload.code+"_"+payload.player, JSON.stringify(acc));
-    $("accSaved").textContent = `✅ Accusation enregistrée : ${acc.who} / ${acc.where} / ${acc.how}`;
-  };
-
-  // load existing accusation
-  try{
-    const saved = localStorage.getItem("cluedo_acc_"+payload.code+"_"+payload.player);
-    if (saved){
-      const a = JSON.parse(saved);
-      $("accWho").value = a.who;
-      $("accWhere").value = a.where;
-      $("accHow").value = a.how;
-      $("accSaved").textContent = `✅ Accusation déjà enregistrée : ${a.who} / ${a.where} / ${a.how}`;
-    }
-  }catch(_){}
-
+function loadPlayer(){
+  const p=new URLSearchParams(location.search).get("p");
+  if(!p)return;
+  payload=JSON.parse(atob(p));
+  document.getElementById("host").classList.add("hide");
+  document.getElementById("player").classList.remove("hide");
+  document.getElementById("pname").textContent=payload.n;
   renderAct();
 }
 
-/* ==========================
-   HOST VIEW from payload
-========================== */
-function showHost(payload){
-  // Here, we simply render links/solution already in payload
-  const game = payload.game;
-  // Pre-fill textarea
-  $("names").value = game.suspects.join("\n");
-  renderHost(game);
+function renderAct(){
+  document.getElementById("actTitle").textContent=ACTS[act][0];
+  document.getElementById("story").textContent=ACTS[act][1];
+  document.getElementById("clue").textContent=payload.hand[act]||"Observe.";
 }
 
-/* ==========================
-   BOOT
-========================== */
-(function boot(){
-  const p = new URL(window.location.href).searchParams.get("p");
-  if (p){
-    const payload = b64decode(p);
-    if (payload.role === "player"){
-      showPlayer(payload);
-      return;
-    }
-    if (payload.role === "host"){
-      showHost(payload);
-      return;
-    }
-  }
+function nextAct(){
+  if(act<4){act++; renderAct();}
+  else alert("Fais ton accusation finale.");
+}
 
-  // default host generator view
-  $("gen").onclick = ()=>{
-    try{
-      const names = $("names").value.split("\n");
-      const game = generateGame(names);
-      renderHost(game);
-      alert("Partie générée ✅\nEnvoie les liens privés aux joueurs.");
-    }catch(e){
-      alert("Erreur : " + e.message);
-    }
-  };
-
-  $("copyHost").onclick = ()=> alert("Génère d’abord la partie 🙂");
-})();
+loadPlayer();
 </script>
-
 </body>
 </html>
+
