@@ -3,50 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Le Dernier Convive</title>
+<title>Noël chez les Brazo — Le Dernier Convive</title>
+
 <style>
+:root{
+  --bg1:#071021;
+  --bg2:#130a1a;
+  --paper:#fff7ee;
+  --ink:#1b1b1b;
+  --gold:#d6b25e;
+  --red:#c41e3a;
+  --green:#1f7a4d;
+}
+
+*{box-sizing:border-box}
+
 body{
-  margin:0; padding:16px;
-  background:#0b1020; color:#fff;
-  font-family:system-ui;
+  margin:0;
+  padding:16px;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  color:#fff;
+  background:
+    radial-gradient(900px 600px at 20% 0%, rgba(214,178,94,.18), transparent 60%),
+    radial-gradient(900px 700px at 80% 10%, rgba(196,30,58,.18), transparent 55%),
+    radial-gradient(1200px 900px at 50% 110%, rgba(31,122,77,.18), transparent 60%),
+    linear-gradient(180deg, var(--bg1), var(--bg2));
 }
+
+/* Guirlande */
+body:before{
+  content:"";
+  position:fixed; left:0; top:0; right:0; height:80px;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 10% 55%, #ffd87a 0 6px, transparent 7px),
+    radial-gradient(circle at 20% 45%, #ff9aa8 0 6px, transparent 7px),
+    radial-gradient(circle at 30% 60%, #8ad9ff 0 6px, transparent 7px),
+    radial-gradient(circle at 40% 45%, #9cffc3 0 6px, transparent 7px),
+    radial-gradient(circle at 50% 60%, #ffd87a 0 6px, transparent 7px),
+    radial-gradient(circle at 60% 45%, #ff9aa8 0 6px, transparent 7px),
+    radial-gradient(circle at 70% 60%, #8ad9ff 0 6px, transparent 7px),
+    radial-gradient(circle at 80% 45%, #9cffc3 0 6px, transparent 7px),
+    linear-gradient(transparent 0 55px, rgba(255,255,255,.15) 55px 57px, transparent 57px);
+}
+
+/* Neige légère */
+@keyframes snow { from{transform:translateY(-20px)} to{transform:translateY(110vh)} }
+.snow{position:fixed; inset:0; pointer-events:none}
+.snow i{
+  position:absolute; top:-30px;
+  width:5px; height:5px; border-radius:50%;
+  background:rgba(255,255,255,.9);
+  animation:snow linear infinite;
+}
+
+/* Cartes */
 .card{
-  max-width:800px; margin:0 auto 16px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:18px; padding:16px;
+  max-width:820px;
+  margin:90px auto 16px;
+  background:var(--paper);
+  color:var(--ink);
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 18px 40px rgba(0,0,0,.35);
+  position:relative;
 }
+.card:after{
+  content:"";
+  position:absolute; inset:10px;
+  border-radius:16px;
+  border:1px solid rgba(214,178,94,.5);
+}
+
 h1,h2{margin:0 0 10px}
-textarea,input,button,select{
-  width:100%; padding:12px; border-radius:12px;
-  border:none; font-size:16px; margin-top:8px;
+h1{font-size:28px}
+h2{font-size:18px}
+
+textarea,button{
+  width:100%; padding:12px; border-radius:14px;
+  border:1px solid rgba(0,0,0,.15);
+  font-size:16px; margin-top:10px;
 }
-button{background:#22c55e; color:#062; font-weight:900}
-.secondary{background:#38bdf8; color:#023}
-.hide{display:none}
-.box{margin-top:12px; padding:12px;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:14px;
+
+button{
+  cursor:pointer; font-weight:900; color:#fff;
+  background:linear-gradient(180deg,#2aa565,#167347);
 }
+button.secondary{
+  background:linear-gradient(180deg,#d63a4f,#a9122b);
+}
+
+.box{
+  margin-top:12px; padding:12px;
+  border-radius:16px;
+  background:rgba(0,0,0,.05);
+  border:1px dashed rgba(196,30,58,.35);
+}
+
 .pill{
   display:inline-block; padding:6px 10px;
-  border-radius:999px; background:rgba(255,255,255,.08);
-  margin:4px 4px 0 0; font-size:13px;
+  border-radius:999px;
+  background:rgba(214,178,94,.2);
+  border:1px solid rgba(214,178,94,.5);
+  font-size:13px; margin:4px 6px 0 0;
 }
+
+.hide{display:none}
+a{color:#0b4a9e; word-break:break-all}
 </style>
 </head>
+
 <body>
 
+<div class="snow" id="snow"></div>
+
 <div class="card" id="host">
-<h1>🕯️ Le Dernier Convive</h1>
+<h1>🎄 Noël chez les Brazo</h1>
+<h2>🕯️ Le Dernier Convive</h2>
 <p>Entre exactement <b>9 prénoms</b> (1 par ligne)</p>
 
 <textarea id="names" placeholder="Alice&#10;Bob&#10;Claire&#10;..."></textarea>
 <button onclick="generate()">GÉNÉRER LA PARTIE</button>
 
 <div class="box">
-<h2>🔗 Liens privés</h2>
+<h2>🔗 Liens privés joueurs</h2>
 <div id="links">—</div>
 </div>
 
@@ -61,7 +141,7 @@ button{background:#22c55e; color:#062; font-weight:900}
 <p><b>Détective :</b> <span id="pname"></span></p>
 
 <div class="box">
-<h2 id="actTitle">🥂 Apéro</h2>
+<h2 id="actTitle"></h2>
 <p id="story"></p>
 </div>
 
@@ -74,76 +154,86 @@ button{background:#22c55e; color:#062; font-weight:900}
 </div>
 
 <script>
-const ACTS = [
+/* NEIGE */
+for(let i=0;i<30;i++){
+  const f=document.createElement("i");
+  f.style.left=Math.random()*100+"vw";
+  f.style.animationDuration=(6+Math.random()*10)+"s";
+  f.style.animationDelay=(-Math.random()*10)+"s";
+  document.getElementById("snow").appendChild(f);
+}
+
+/* JEU */
+const ACTS=[
  ["🥂 Apéro","Quelque chose commence. Un détail revient deux fois."],
  ["🍽️ Entrée","Un objet n’est plus exactement à sa place."],
- ["🍝 Plat","Quelqu’un semble anticiper les réactions."],
+ ["🍝 Plat","Quelqu’un anticipe les réactions."],
  ["🧀 Fromage","Un indice est trop parfait."],
  ["🍰 Dessert","La vérité est là. Déduis."]
 ];
 
-const WHERE = ["Cuisine","Couloir","Salon","Salle à manger","Terrasse","Entrée","Escalier","Bar","Point d’eau"];
-const HOW = ["Message anonyme","Substitution","Son/Lumière","Mensonge","Faux indice","Regard","Rumeur","Disparition","Mise en scène"];
+const WHERE=["Cuisine","Couloir","Salon","Salle à manger","Terrasse","Entrée","Escalier","Bar","Point d’eau"];
+const HOW=["Message anonyme","Substitution","Son/Lumière","Mensonge","Faux indice","Regard","Rumeur","Disparition","Mise en scène"];
 
 let payload=null, act=0;
 
 function shuffle(a){
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
+ for(let i=a.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [a[i],a[j]]=[a[j],a[i]];
+ }
+ return a;
 }
 
 function generate(){
-  const names=document.getElementById("names").value.trim().split("\n");
-  if(names.length!==9){alert("Il faut 9 prénoms");return;}
-  const killer=shuffle([...names])[0];
-  const where=shuffle([...WHERE])[0];
-  const how=shuffle([...HOW])[0];
+ const names=document.getElementById("names").value.trim().split("\n");
+ if(names.length!==9){alert("Il faut 9 prénoms");return;}
 
-  document.getElementById("solution").innerHTML=
-    `<b>🔪 ${killer}</b><br>📍 ${where}<br>🛠️ ${how}`;
+ const killer=shuffle([...names])[0];
+ const where=shuffle([...WHERE])[0];
+ const how=shuffle([...HOW])[0];
 
-  let deck=[];
-  names.forEach(n=>{if(n!==killer)deck.push("❌ Ce n’est pas "+n)});
-  WHERE.forEach(l=>{if(l!==where)deck.push("❌ Pas "+l)});
-  HOW.forEach(h=>{if(h!==how)deck.push("❌ Pas "+h)});
-  shuffle(deck);
+ document.getElementById("solution").innerHTML=
+  `<b>🔪 ${killer}</b><br>📍 ${where}<br>🛠️ ${how}`;
 
-  let links="";
-  names.forEach((n,i)=>{
-    const hand=deck.filter((_,k)=>k%9===i);
-    const data=btoa(JSON.stringify({n,hand}));
-    const url=location.href.split("?")[0]+"?p="+data;
-    links+=`<div class="pill">${n}</div><div>${url}</div><br>`;
-  });
-  document.getElementById("links").innerHTML=links;
+ let deck=[];
+ names.forEach(n=>{if(n!==killer)deck.push("❌ Ce n’est pas "+n)});
+ WHERE.forEach(l=>{if(l!==where)deck.push("❌ Pas "+l)});
+ HOW.forEach(h=>{if(h!==how)deck.push("❌ Pas "+h)});
+ shuffle(deck);
+
+ let links="";
+ names.forEach((n,i)=>{
+  const hand=deck.filter((_,k)=>k%9===i);
+  const data=btoa(JSON.stringify({n,hand}));
+  const url=location.href.split("?")[0]+"?p="+data;
+  links+=`<div class="pill">${n}</div><div>${url}</div><br>`;
+ });
+ document.getElementById("links").innerHTML=links;
 }
 
 function loadPlayer(){
-  const p=new URLSearchParams(location.search).get("p");
-  if(!p)return;
-  payload=JSON.parse(atob(p));
-  document.getElementById("host").classList.add("hide");
-  document.getElementById("player").classList.remove("hide");
-  document.getElementById("pname").textContent=payload.n;
-  renderAct();
+ const p=new URLSearchParams(location.search).get("p");
+ if(!p)return;
+ payload=JSON.parse(atob(p));
+ document.getElementById("host").classList.add("hide");
+ document.getElementById("player").classList.remove("hide");
+ document.getElementById("pname").textContent=payload.n;
+ renderAct();
 }
 
 function renderAct(){
-  document.getElementById("actTitle").textContent=ACTS[act][0];
-  document.getElementById("story").textContent=ACTS[act][1];
-  document.getElementById("clue").textContent=payload.hand[act]||"Observe.";
+ document.getElementById("actTitle").textContent=ACTS[act][0];
+ document.getElementById("story").textContent=ACTS[act][1];
+ document.getElementById("clue").textContent=payload.hand[act]||"Observe.";
 }
 
 function nextAct(){
-  if(act<4){act++; renderAct();}
-  else alert("Fais ton accusation finale.");
+ if(act<4){act++;renderAct();}
+ else alert("Fais ton accusation finale.");
 }
 
 loadPlayer();
 </script>
 </body>
 </html>
-
