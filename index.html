@@ -2,10 +2,10 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Pas Noël 🎭</title>
+  <title>Noël chez les Brazo 🎄</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Firebase SDKs (COMPAT) -->
+  <!-- Firebase SDKs (COMPAT — OBLIGATOIRE) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -28,17 +28,18 @@
       border-radius: 20px;
     }
     button {
-      padding: 12px 20px;
-      border-radius: 10px;
+      padding: 14px 22px;
+      border-radius: 12px;
       border: none;
       font-size: 16px;
       cursor: pointer;
       background: #22c55e;
       color: #000;
       margin-top: 20px;
+      font-weight: 600;
     }
     .code {
-      font-size: 42px;
+      font-size: 44px;
       font-weight: 800;
       letter-spacing: 6px;
       margin-top: 20px;
@@ -54,15 +55,15 @@
 <body>
 
   <div class="box">
-    <h1>🎭 Pas Noël</h1>
-    <p>Créer une partie</p>
+    <h1>🎭 Noël chez les Brazo</h1>
+    <p>Lancer une partie</p>
     <button id="create">Créer une partie</button>
     <div id="result"></div>
   </div>
 
   <script>
     // ======================
-    // FIREBASE CONFIG
+    // FIREBASE CONFIG (COMPAT)
     // ======================
     const firebaseConfig = {
       apiKey: "AIzaSyDgJMI2owAPCz1CawUhi6C50a1vqIpY0bo",
@@ -73,9 +74,7 @@
       appId: "1:143321594120:web:c19f278a07720bd18cd4bd"
     };
 
-    // ======================
-    // INIT
-    // ======================
+    // INIT FIREBASE
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -94,7 +93,7 @@
     }
 
     // ======================
-    // CREATE ROOM
+    // CREATE GAME
     // ======================
     document.getElementById("create").onclick = async () => {
       try {
@@ -102,14 +101,15 @@
         const code = randCode();
 
         await db.collection("rooms").doc(code).set({
-          code,
+          code: code,
+          gameName: "Noël chez les Brazo 🎄",
           hostUid: uid,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
         document.getElementById("result").innerHTML = `
           <div class="code">${code}</div>
-          <div class="small">Partie créée ✅</div>
+          <div class="small">Partie créée 🎉</div>
         `;
 
       } catch (e) {
@@ -121,3 +121,4 @@
 
 </body>
 </html>
+
