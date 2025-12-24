@@ -7,256 +7,259 @@
 
 <style>
 :root{
-  --bg1:#071021;
-  --bg2:#130a1a;
+  --bg1:#0b1430;
+  --bg2:#1a0b1e;
   --paper:#fff7ee;
   --ink:#1b1b1b;
   --gold:#d6b25e;
   --red:#c41e3a;
   --green:#1f7a4d;
 }
+
 *{box-sizing:border-box}
+
 body{
-  margin:0; padding:16px;
+  margin:0;
+  padding:18px;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
   color:#fff;
   background:
-    radial-gradient(900px 600px at 20% 0%, rgba(214,178,94,.18), transparent 60%),
+    radial-gradient(900px 600px at 20% 0%, rgba(214,178,94,.20), transparent 60%),
     radial-gradient(900px 700px at 80% 10%, rgba(196,30,58,.18), transparent 55%),
     radial-gradient(1200px 900px at 50% 110%, rgba(31,122,77,.18), transparent 60%),
     linear-gradient(180deg, var(--bg1), var(--bg2));
 }
-body:before{
-  content:"";
-  position:fixed; left:0; top:0; right:0; height:80px;
-  pointer-events:none;
-  background:
-    radial-gradient(circle at 10% 55%, #ffd87a 0 6px, transparent 7px),
-    radial-gradient(circle at 20% 45%, #ff9aa8 0 6px, transparent 7px),
-    radial-gradient(circle at 30% 60%, #8ad9ff 0 6px, transparent 7px),
-    radial-gradient(circle at 40% 45%, #9cffc3 0 6px, transparent 7px),
-    radial-gradient(circle at 50% 60%, #ffd87a 0 6px, transparent 7px),
-    radial-gradient(circle at 60% 45%, #ff9aa8 0 6px, transparent 7px),
-    radial-gradient(circle at 70% 60%, #8ad9ff 0 6px, transparent 7px),
-    radial-gradient(circle at 80% 45%, #9cffc3 0 6px, transparent 7px),
-    linear-gradient(transparent 0 55px, rgba(255,255,255,.15) 55px 57px, transparent 57px);
-}
-@keyframes snow { from{transform:translateY(-20px)} to{transform:translateY(110vh)} }
-.snow{position:fixed; inset:0; pointer-events:none}
-.snow i{
-  position:absolute; top:-30px;
-  width:5px; height:5px; border-radius:50%;
-  background:rgba(255,255,255,.9);
-  animation:snow linear infinite;
-}
+
+.wrap{max-width:860px;margin:0 auto}
+
 .card{
-  max-width:820px;
-  margin:90px auto 16px;
   background:var(--paper);
   color:var(--ink);
   border-radius:22px;
   padding:18px;
   box-shadow:0 18px 40px rgba(0,0,0,.35);
+  border:1px solid rgba(0,0,0,.06);
   position:relative;
+  margin:0 auto 16px;
 }
+
 .card:after{
   content:"";
-  position:absolute; inset:10px;
+  position:absolute;
+  inset:10px;
   border-radius:16px;
-  border:1px solid rgba(214,178,94,.5);
+  border:1px solid rgba(214,178,94,.55);
   pointer-events:none;
 }
+
 h1,h2{margin:0 0 10px}
 h1{font-size:28px}
 h2{font-size:18px}
-textarea,button{
-  width:100%; padding:12px; border-radius:14px;
-  border:1px solid rgba(0,0,0,.15);
-  font-size:16px; margin-top:10px;
+.small{opacity:.78;font-size:14px;line-height:1.35}
+
+textarea,button,select{
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,.14);
+  font-size:16px;
+  margin-top:10px;
+  background:#fff;
+  color:#111;
 }
+
 button{
-  cursor:pointer; font-weight:900; color:#fff;
+  cursor:pointer;
+  font-weight:900;
+  border:none;
+  color:#fff;
   background:linear-gradient(180deg,#2aa565,#167347);
+  box-shadow:0 10px 22px rgba(31,122,77,.20);
 }
 button.secondary{
   background:linear-gradient(180deg,#d63a4f,#a9122b);
+  box-shadow:0 10px 22px rgba(196,30,58,.18);
 }
+
 .box{
-  margin-top:12px; padding:12px;
+  margin-top:12px;
+  padding:12px;
   border-radius:16px;
   background:rgba(0,0,0,.05);
   border:1px dashed rgba(196,30,58,.35);
 }
+
 .pill{
-  display:inline-block; padding:6px 10px;
+  display:inline-block;
+  padding:6px 10px;
   border-radius:999px;
-  background:rgba(214,178,94,.2);
-  border:1px solid rgba(214,178,94,.5);
-  font-size:13px; margin:4px 6px 0 0;
+  background:rgba(214,178,94,.18);
+  border:1px solid rgba(214,178,94,.45);
+  font-size:13px;
+  margin:6px 6px 0 0;
 }
+
+a{color:#0b4a9e;word-break:break-all}
 .hide{display:none}
-a{color:#0b4a9e; word-break:break-all}
-.small{opacity:.75;font-size:14px}
+
+/* Forcer la saisie au-dessus de tout */
+textarea,button,select{position:relative; z-index:5; pointer-events:auto}
 </style>
 </head>
 
 <body>
-<div class="snow" id="snow"></div>
+<div class="wrap">
 
-<div class="card" id="host">
-  <h1>🎄 Noël chez les Brazo</h1>
-  <h2>🕯️ Le Dernier Convive</h2>
-  <div class="small">Entre exactement <b>9 prénoms</b> (1 par ligne). Puis clique “Générer”.</div>
+  <!-- HOST -->
+  <div class="card" id="host">
+    <h1>🎄 Noël chez les Brazo</h1>
+    <h2>🕯️ Le Dernier Convive</h2>
+    <div class="small">
+      1) Mets <b>exactement 9 prénoms</b> (1 par ligne) <br>
+      2) Clique <b>GÉNÉRER</b> <br>
+      3) Envoie à chacun son lien privé (WhatsApp) <br>
+      4) À chaque moment du repas, tout le monde clique “Acte suivant”
+    </div>
 
-  <textarea id="names" placeholder="Yann&#10;Delphine&#10;... (9 lignes)"></textarea>
-  <button id="btnGen">GÉNÉRER LA PARTIE</button>
+    <textarea id="names" placeholder="Yann&#10;Delphine&#10;Maxime&#10;Louis&#10;Gabriel&#10;Juliette&#10;Baptiste&#10;... (9 lignes)"></textarea>
+    <button id="btnGen">GÉNÉRER LA PARTIE</button>
 
-  <div class="box">
-    <h2>🔗 Liens privés joueurs</h2>
-    <div id="links" class="small">—</div>
+    <div class="box">
+      <h2>🔗 Liens privés joueurs</h2>
+      <div id="links" class="small">—</div>
+    </div>
+
+    <div class="box">
+      <h2>🧩 Solution (hôte)</h2>
+      <div id="solution" class="small">—</div>
+      <div class="small" style="margin-top:8px">
+        À dire au groupe : <b>“C’est un Cluedo. Vous avez des indices privés. Au dessert, vous accusez.”</b>
+      </div>
+    </div>
   </div>
 
-  <div class="box">
-    <h2>🧩 Solution (hôte)</h2>
-    <div id="solution" class="small">—</div>
-  </div>
-</div>
+  <!-- PLAYER -->
+  <div class="card hide" id="player">
+    <h1>🕯️ Le Dernier Convive</h1>
+    <div class="small"><b>Détective :</b> <span id="pname"></span> — Ne montre pas ton écran.</div>
 
-<div class="card hide" id="player">
-  <h1>🕯️ Le Dernier Convive</h1>
-  <div class="small"><b>Détective :</b> <span id="pname"></span> — <span class="small">Ne montre pas ton écran.</span></div>
+    <div class="box">
+      <h2 id="actTitle"></h2>
+      <div id="story" class="small"></div>
+    </div>
 
-  <div class="box">
-    <h2 id="actTitle"></h2>
-    <div id="story" class="small"></div>
-  </div>
+    <div class="box">
+      <h2>🔍 Ton indice</h2>
+      <div id="clue" class="small"></div>
+    </div>
 
-  <div class="box">
-    <h2>🔍 Ton indice</h2>
-    <div id="clue" class="small"></div>
+    <button class="secondary" id="btnNext">ACTE SUIVANT</button>
   </div>
 
-  <button class="secondary" id="btnNext">ACTE SUIVANT</button>
 </div>
 
 <script>
-/* Neige */
-(function(){
-  const wrap = document.getElementById("snow");
-  for(let i=0;i<30;i++){
-    const f=document.createElement("i");
-    f.style.left=Math.random()*100+"vw";
-    f.style.animationDuration=(6+Math.random()*10)+"s";
-    f.style.animationDelay=(-Math.random()*10)+"s";
-    f.style.opacity=(0.3+Math.random()*0.7);
-    const s=(3+Math.random()*5);
-    f.style.width=s+"px"; f.style.height=s+"px";
-    wrap.appendChild(f);
-  }
-})();
-
-/* Base64 UTF-8 safe */
+/* Base64 UTF-8 safe (résout les accents / ’ / etc.) */
 function b64uEncode(obj){
   const json = JSON.stringify(obj);
   const bytes = new TextEncoder().encode(json);
   let bin = "";
-  bytes.forEach(b => bin += String.fromCharCode(b));
+  for (const b of bytes) bin += String.fromCharCode(b);
   return btoa(bin);
 }
 function b64uDecode(str){
   const bin = atob(str);
   const bytes = new Uint8Array(bin.length);
-  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  for (let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
   const json = new TextDecoder().decode(bytes);
   return JSON.parse(json);
 }
 
-const ACTS=[
- ["🥂 Apéro","Quelque chose commence. Un détail revient deux fois."],
- ["🍽️ Entrée","Un objet n’est plus exactement à sa place."],
- ["🍝 Plat","Quelqu’un anticipe les réactions."],
- ["🧀 Fromage","Un indice est trop parfait."],
- ["🍰 Dessert","La vérité est là. Déduis."]
+const ACTS = [
+  ["🥂 Apéro",   "Une phrase revient deux fois, comme un écho. Quelqu’un teste l’ambiance… doucement."],
+  ["🍽️ Entrée",  "Un objet n’est plus exactement à sa place. Personne n’a vu le mouvement."],
+  ["🍝 Plat",    "Quelqu’un semble anticiper les réactions avant qu’elles n’arrivent. Une micro-seconde d’avance."],
+  ["🧀 Fromage", "Un indice est trop parfait. Trop propre. Il a été déposé volontairement."],
+  ["🍰 Dessert", "La vérité est une combinaison. Ce que tu n’as pas éliminé est probablement la réponse."]
 ];
 
-const WHERE=["Cuisine","Couloir","Salon","Salle à manger","Terrasse","Entrée","Escalier","Bar","Point d’eau"];
-const HOW=["Message anonyme","Substitution","Son/Lumière","Mensonge","Faux indice","Regard","Rumeur","Disparition","Mise en scène"];
+const WHERE = ["Cuisine","Couloir","Salon","Salle à manger","Terrasse/Balcon","Entrée","Escalier/Palier","Près du frigo/bar","Point d’eau/WC"];
+const HOW   = ["Message anonyme","Substitution discrète","Son/Lumière déclenché","Mensonge répété","Faux indice placé","Regard orchestré","Rumeur soufflée","Disparition d’objet","Mise en scène subtile"];
 
-let payload=null, act=0;
+let payload = null;
+let act = 0;
 
 function shuffle(a){
   for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
   }
   return a;
 }
-
 function cleanNames(raw){
-  return raw
-    .split("\n")
-    .map(s=>s.trim())
-    .filter(Boolean);
+  return raw.split("\n").map(s=>s.trim()).filter(Boolean);
 }
 
 function generate(){
   const names = cleanNames(document.getElementById("names").value);
-  if(names.length!==9){
+  if (names.length !== 9){
     alert("Il faut exactement 9 prénoms (9 lignes non vides).");
     return;
   }
 
-  const killer=shuffle([...names])[0];
-  const where=shuffle([...WHERE])[0];
-  const how=shuffle([...HOW])[0];
+  const killer = shuffle([...names])[0];
+  const where  = shuffle([...WHERE])[0];
+  const how    = shuffle([...HOW])[0];
 
   document.getElementById("solution").innerHTML =
-    `<b>🔪 ${killer}</b><br>📍 ${where}<br>🛠️ ${how}<br><span class="small">À révéler au dessert.</span>`;
+    `<b>🔪 ${killer}</b><br>📍 ${where}<br>🛠️ ${how}<br><span class="small">Ne révèle qu’au dessert.</span>`;
 
-  // Deck d'exclusions
-  let deck=[];
-  names.forEach(n=>{ if(n!==killer) deck.push("❌ Ce n'est pas " + n); });
-  WHERE.forEach(l=>{ if(l!==where) deck.push("❌ Pas " + l); });
-  HOW.forEach(h=>{ if(h!==how) deck.push("❌ Pas " + h); });
+  // Deck d'exclusions (tout sauf la solution)
+  const deck = [];
+  for (const n of names) if (n !== killer) deck.push(`❌ Ce n’est pas ${n}`);
+  for (const w of WHERE) if (w !== where)  deck.push(`❌ Pas ${w}`);
+  for (const h of HOW)   if (h !== how)    deck.push(`❌ Pas ${h}`);
   shuffle(deck);
 
-  // Liens privés
-  let linksHTML="";
-  const base = location.origin + location.pathname; // marche bien sur GitHub Pages
+  // Base URL (Nickel pour GitHub Pages)
+  const base = location.origin + location.pathname;
+
+  let linksHTML = "";
   names.forEach((n,i)=>{
-    const hand = deck.filter((_,k)=>k%9===i);
+    const hand = deck.filter((_,k)=>k % 9 === i);
     const data = b64uEncode({ n, hand });
-    const url = base + "?p=" + encodeURIComponent(data);
+    const url  = base + "?p=" + encodeURIComponent(data);
     linksHTML += `<div class="pill">${n}</div><div><a href="${url}">${url}</a></div><br>`;
   });
+
   document.getElementById("links").innerHTML = linksHTML;
 }
 
 function renderAct(){
   document.getElementById("actTitle").textContent = ACTS[act][0];
-  document.getElementById("story").textContent = ACTS[act][1];
-  document.getElementById("clue").textContent = payload.hand[act] || "Observe.";
+  document.getElementById("story").textContent    = ACTS[act][1];
+  document.getElementById("clue").textContent     = payload.hand[act] || "Pas d’indice personnel à cet acte. Observe 🙂";
 }
 
 function nextAct(){
-  if(act < ACTS.length-1){
+  if (act < ACTS.length - 1){
     act++;
     renderAct();
-  }else{
-    alert("Dernier acte. Fais ton accusation finale, puis attends la révélation de l'hôte 🕯️");
+  } else {
+    alert("Dernier acte. Fais ton accusation finale, puis attends la révélation de l’hôte 🕯️");
   }
 }
 
 function loadPlayer(){
   const p = new URLSearchParams(location.search).get("p");
-  if(!p) return;
+  if (!p) return;
 
   payload = b64uDecode(decodeURIComponent(p));
 
   document.getElementById("host").classList.add("hide");
   document.getElementById("player").classList.remove("hide");
-  document.getElementById("pname").textContent = payload.n;
 
+  document.getElementById("pname").textContent = payload.n;
   renderAct();
 }
 
